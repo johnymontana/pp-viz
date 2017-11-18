@@ -1,0 +1,84 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="//cdn.leafletjs.com/leaflet-0.6.4/leaflet.css" />
+    <!--[if lte IE 8]>
+      <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.ie.css" />
+    <![endif]-->
+
+     <script src="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js"></script>
+     <!--<script src="http://cdn.leafletjs.com/leaflet-0.4.4/leaflet-src.js"></script> -->
+     
+     
+     <script src="js/neo4j-web.min.js"></script>
+     
+    <!--<script src="js/heatmap/src/heatmap.js"></script>
+     <script src="js/heatmap/src/heatmap-leaflet.js"></script>
+     <script src="js/heatmap/src/QuadTree.js"></script> -->
+
+     <script src="js/heatcanvas.js"></script>
+     <script src="js/heatcanvas-leaflet.js"></script>
+     <script src="js/markercluster/leaflet.markercluster-src.js"></script>
+     <link rel="stylesheet" href="js/markercluster/MarkerCluster.css" />
+     <link rel="stylesheet" href="js/markercluster/MarkerCluster.Default.css" />
+
+  <style>
+    #map {height: 500px;}
+  </style>
+
+  </head>
+
+  <body>
+    <div id="map"></div>
+
+
+    <script>
+    
+    window.onload = function() {
+      init();
+      //console.log("window hath loaded");
+    }   
+    
+    function init() {
+      console.log("init");
+      var driver = neo4j.v1.driver("bolt://165.227.223.190:7687", neo4j.v1.auth.basic("ppviz", "ppviz"));
+      
+      var baseLayer = L.tileLayer('http://{s}.tile.cloudmade.com/ab7393729f6047c695f84e4a00d4a876/997/256/{z}/{x}/{y}.png', { attribution: 'Data From ICIJ Offshore Leaks', minZoom: 2, maxZoom: 18});
+
+    var markerLayers = new L.MarkerClusterGroup();
+    var heatmap = new L.TileLayer.HeatCanvas({}, {'step':0.3, 'degree': HeatCanvas.LINEAR, 'opacity': 0.7});
+
+    //var markerLayers = new L.LayerGroup();
+    //var markerLayers = new L.MarkerClusterGroup();
+    
+    
+    var session = driver.session();
+    session
+      .run(`MATCH (a:Address)--(o:Officer)--(e:Entity)
+            WHERE exists(a.latitude) and exists(a.longitude) 
+            RETURN a.name AS address, a.latitude AS latitude, a.longitude AS longitude, COLLECT(DISTINCT o.name) AS officers, COLLECT(DISTINCT e.name) AS entities, COLLECT(DISTINCT e.jurisdiction_description) AS jurisdictions, 1.0*COUNT(*) AS strength`)
+      .subscribe({
+        onNext: function (record) {
+          //console.log(record);
+          var marker = new L.Marker(new L.LatLng(record.get('latitude'), record.get('longitude')));
+          marker.bindPopup('<b>Address:</b> ' + record.get('address') + '<br>' + '<b>Officers: </b>' + record.get('officers').toString() + '<br><b>Entities:</b> ' + record.get('entities').toString() + '<br><b>Offshore Countries: </b> ' + record.get('jurisdictions').toString());
+          markerLayers.addLayer(marker);
+          heatmap.pushData(record.get('latitude'), record.get('longitude'), record.get('strength')*0.01);
+        },
+        onCompleted: function () {
+          var overlayMaps = {'Markers': markerLayers, 'Heatmap': heatmap};
+
+          var controls = L.control.layers(null, overlayMaps, {collapsed: false, autoZIndex: true});
+
+          var map = new L.Map('map', {center: new L.LatLng(51.505, -0.09), zoom: 2, layers: [baseLayer]});
+
+          controls.addTo(map);
+          session.close();
+        },
+        onError: function (error) {
+          console.log(error);
+        }
+      });
+}
+    </script>
+  </body>
+</html>
