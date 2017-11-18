@@ -53,6 +53,18 @@
 
     <script>
     
+    var map;
+    
+    function onLocationFound(e) {
+      
+      //map.zoomTo(e.latlng);
+
+    }
+
+    function onLocationError(e) {
+      alert(e.message);
+    }
+    
     window.onload = function() {
       init();
       //console.log("window hath loaded");
@@ -87,13 +99,21 @@
         onCompleted: function () {
           
           var spinner = document.getElementById("sp");
+          
+          
+          
+          
           spinner.setAttribute("style", "display: none;");
           
           var overlayMaps = {'Markers': markerLayers, 'Heatmap': heatmap};
 
           var controls = L.control.layers(null, overlayMaps, {collapsed: false, autoZIndex: true});
 
-          var map = new L.Map('map', {center: new L.LatLng(51.505, -0.09), zoom: 3, layers: [baseLayer]});
+          map = new L.Map('map', {center: new L.LatLng(51.505, -0.09), zoom: 3, layers: [baseLayer]});
+          map.on('locationfound', onLocationFound);
+          map.on('locationerror', onLocationError);
+          map.locate({setView: true, maxZoom: 7});
+          
           map.addLayer(markerLayers);
           map.addLayer(heatmap);
 
