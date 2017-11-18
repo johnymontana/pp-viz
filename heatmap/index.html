@@ -112,7 +112,7 @@
           map = new L.Map('map', {center: new L.LatLng(51.505, -0.09), zoom: 3, layers: [baseLayer]});
           map.on('locationfound', onLocationFound);
           map.on('locationerror', onLocationError);
-          map.locate({setView: true, maxZoom: 7});
+          //map.locate({setView: true, maxZoom: 7});
           
           map.addLayer(markerLayers);
           map.addLayer(heatmap);
