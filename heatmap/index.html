@@ -93,7 +93,9 @@
 
           var controls = L.control.layers(null, overlayMaps, {collapsed: false, autoZIndex: true});
 
-          var map = new L.Map('map', {center: new L.LatLng(51.505, -0.09), zoom: 2, layers: [baseLayer]});
+          var map = new L.Map('map', {center: new L.LatLng(51.505, -0.09), zoom: 3, layers: [baseLayer]});
+          map.addLayer(markerLayers);
+          map.addLayer(heatmap);
 
           controls.addTo(map);
           session.close();
