@@ -4,7 +4,7 @@ Visualizing the Paradise Papers dataset with Neo4j. See the blog post [here.](ht
 
 ![](img/datamodel.jpg)
 
-[## Heatmap](heatmap/)
+## Heatmap
 
 An interactive map visualization of geocoded addresses in Paradise Papers.
 
@@ -14,7 +14,7 @@ An interactive map visualization of geocoded addresses in Paradise Papers.
 
 ![](heatmap/img/map_marker.png)
 
-[## Jupyter notebook](jupyter/)
+## Jupyter
 
 Jupyter notebooks for creating visualizations with Neo4j, Python, matplotlib, and bokeh.
 
