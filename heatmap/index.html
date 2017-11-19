@@ -63,7 +63,7 @@
     }
 
     function onLocationError(e) {
-      alert(e.message);
+      //alert(e.message);
     }
     
     window.onload = function() {
@@ -73,6 +73,7 @@
     
     function init() {
       console.log("init");
+      // FIXME: {encrypted: true}
       var driver = neo4j.v1.driver("bolt://165.227.223.190:7687", neo4j.v1.auth.basic("ppviz", "ppviz"));
       
       var baseLayer = L.tileLayer('//{s}.tile.cloudmade.com/ab7393729f6047c695f84e4a00d4a876/997/256/{z}/{x}/{y}.png', { attribution: 'Data From ICIJ Offshore Leaks', minZoom: 2, maxZoom: 18});
