@@ -73,10 +73,11 @@
     
     function init() {
       console.log("init");
-      // FIXME: {encrypted: true}
+      
       var driver = neo4j.v1.driver("bolt://165.227.223.190:7687", neo4j.v1.auth.basic("ppviz", "ppviz"));
       
-      var baseLayer = L.tileLayer('//{s}.tile.cloudmade.com/ab7393729f6047c695f84e4a00d4a876/997/256/{z}/{x}/{y}.png', { attribution: 'Data From ICIJ Offshore Leaks', minZoom: 2, maxZoom: 18});
+      
+      var baseLayer = L.tileLayer('//{s}.tile.osm.org/{z}/{x}/{y}.png', { attribution: '<a target=_blank href="http://osm.org/copyright">OpenStreetMap</a> | Data From <a target=_blank href="https://offshoreleaks.icij.org/pages/database">ICIJ Offshore Leaks</a>', minZoom: 2, maxZoom: 18});
 
       var markerLayers = new L.MarkerClusterGroup();
       var heatmap = new L.TileLayer.HeatCanvas({}, {'step':0.3, 'degree': HeatCanvas.LINEAR, 'opacity': 0.7});
