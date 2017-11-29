@@ -88,9 +88,10 @@
       
       var session = driver.session();
       session
-        .run(`MATCH (a:Address)--(o:Officer)--(e:Entity)
+        .run(`MATCH (a:Address)<-[:REGISTERED_ADDRESS]-(o:Officer)-[:OFFICER_OF|CONNECTED_TO]->(e:Entity)
               WHERE exists(a.latitude) and exists(a.longitude) 
-              RETURN a.name AS address, a.latitude AS latitude, a.longitude AS longitude, COLLECT(DISTINCT o.name) AS officers, COLLECT(DISTINCT e.name) AS entities, COLLECT(DISTINCT e.jurisdiction_description) AS jurisdictions, 1.0*COUNT(*) AS strength`)
+              WITH a, COLLECT(DISTINCT o)[0..5] AS officers, COLLECT(DISTINCT e)[0..5] AS entities, COLLECT(DISTINCT e.jurisdiction_description)[0..5] AS jurisdictions, 1.0*COUNT(*) AS strength
+              RETURN a.name AS address, a.latitude AS latitude, a.longitude AS longitude, [x IN officers | x.name] as officers, [x IN entities | x.name] as entities, jurisdictions, strength`)
         .subscribe({
           onNext: function (record) {
             //console.log(record);
